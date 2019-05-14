@@ -1,70 +1,64 @@
-import java.io.*;
+package edu.msudenver;
 
-import javax.net.ssl.*;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import java.io.*;
 
 /**
  * @author Joe Prasanna Kumar
- * This program simulates a client socket program which communicates with the SSL Server
- *
- * Algorithm:
- * 1. Determine the SSL Server Name and port in which the SSL server is listening
- * 2. Register the JSSE provider
- * 3. Create an instance of SSLSocketFactory
- * 4. Create an instance of SSLSocket
- * 5. Create an OutputStream object to write to the SSL Server
- * 6. Create an InputStream object to receive messages back from the SSL Server
- *
  */
 
 public class Main {
+    public static void main(String[] args) {
+        String strServerName = "localhost";
+        int intSSLport = 4443;
+        BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter out;
+        BufferedReader in;
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) throws Exception{
-        String strServerName = "localhost"; // SSL Server Name
-        int intSSLport = 4443; // Port where the SSL Server is listening
-        PrintWriter out = null;
-        BufferedReader in = null;
-
-        // System.setProperty("jdk.tls.client.protocols", "TLSv1.2" );
-        System.out.println(System.getProperty("java.version"));
         System.setProperty("javax.net.ssl.trustStore", "testkeystore.ks");
         System.setProperty("javax.net.ssl.trustStorePassword","testpwd");
 
+        SSLSocketFactory sslsocketfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
+        SSLSocket sslSocket;
         try {
-            // Creating Client Sockets
-            SSLSocketFactory sslsocketfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
-            SSLSocket sslSocket = (SSLSocket)sslsocketfactory.createSocket(strServerName,intSSLport);
+            sslSocket = (SSLSocket)sslsocketfactory.createSocket(strServerName,intSSLport);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
 
-            // Initializing the streams for Communication with the Server
-            out = new PrintWriter(sslSocket.getOutputStream(), true);
+        try {
+            out = new BufferedWriter(new OutputStreamWriter(sslSocket.getOutputStream()));
             in = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
 
-            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-            String userInput = "Hello Testing ";
-            out.println(userInput);
+        try {
+            out.write("Hello Testing");
+
+            String userInput;
 
             while ((userInput = stdIn.readLine()) != null) {
-                out.println(userInput);
+                out.write(userInput);
                 System.out.println("echo: " + in.readLine());
             }
 
-            out.println(userInput);
+            out.write(userInput);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
 
-            // Closing the Streams and the Socket
+        try {
             out.close();
             in.close();
             stdIn.close();
             sslSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        catch(Exception exp)
-        {
-            System.out.println(" Exception occurred .... " +exp);
-            exp.printStackTrace();
-        }
-
     }
-
 }
