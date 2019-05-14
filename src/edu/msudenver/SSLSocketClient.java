@@ -8,7 +8,7 @@ import java.io.*;
  * @author Joe Prasanna Kumar
  */
 
-public class Main {
+public class SSLSocketClient {
     public static void main(String[] args) {
         String strServerName = "localhost";
         int intSSLport = 4443;
