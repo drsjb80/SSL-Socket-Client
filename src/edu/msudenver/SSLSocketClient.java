@@ -9,56 +9,26 @@ import java.io.*;
  */
 
 public class SSLSocketClient {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String strServerName = "localhost";
-        int intSSLport = 4443;
-        BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter out;
-        BufferedReader in;
+        int intSSLport = 443;
 
         System.setProperty("javax.net.ssl.trustStore", "testkeystore.ks");
         System.setProperty("javax.net.ssl.trustStorePassword","testpwd");
 
         SSLSocketFactory sslsocketfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
-        SSLSocket sslSocket;
-        try {
-            sslSocket = (SSLSocket)sslsocketfactory.createSocket(strServerName,intSSLport);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+        SSLSocket sslSocket = (SSLSocket)sslsocketfactory.createSocket(strServerName,intSSLport);
 
-        try {
-            out = new BufferedWriter(new OutputStreamWriter(sslSocket.getOutputStream()));
-            in = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+        BufferedReader in = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sslSocket.getOutputStream()));
 
-        try {
-            out.write("Hello Testing");
+        out.write("Hello World!\n");
+        out.flush();
+        String receieved = in.readLine();
+        System.out.println("RECEIVED: " + receieved);
 
-            String userInput;
-
-            while ((userInput = stdIn.readLine()) != null) {
-                out.write(userInput);
-                System.out.println("echo: " + in.readLine());
-            }
-
-            out.write(userInput);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        try {
-            out.close();
-            in.close();
-            stdIn.close();
-            sslSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        out.close();
+        in.close();
+        sslSocket.close();
     }
 }
