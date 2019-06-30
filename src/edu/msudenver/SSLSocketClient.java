@@ -11,9 +11,9 @@ import java.io.*;
 public class SSLSocketClient {
     public static void main(String[] args) throws IOException {
         String strServerName = "localhost";
-        int intSSLport = 443;
+        int intSSLport = 853;
 
-        System.setProperty("javax.net.ssl.trustStore", "testkeystore.ks");
+        System.setProperty("javax.net.ssl.trustStore", "/tmp/testkeystore.ks");
         System.setProperty("javax.net.ssl.trustStorePassword","testpwd");
 
         SSLSocketFactory sslsocketfactory = (SSLSocketFactory)SSLSocketFactory.getDefault();
